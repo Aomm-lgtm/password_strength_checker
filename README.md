@@ -7,3 +7,4 @@ It rates the password's security level based on these criterias :
 - STRONG: contains more than 12 characters, at most 40% of the password is digits, contains at least on special character
 
 If the password is not at the most secure level, it can make suggestions 
+# password_strength_checker
