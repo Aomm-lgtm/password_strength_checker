@@ -8,7 +8,7 @@ partion = "-"*100
 
 def main(password: str = typer.Argument("1234", help="Password to assess" )):
     """
-    Assesses your password's strength and makes suggestions if necessary. It is suggested to put de password between quotes, especially if it contains special characters
+    Assesses your password's strength and makes suggestions if necessary. It is suggested to put the password between quotes, especially if it contains special characters
     """
 
     print(partion)
