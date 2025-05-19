@@ -37,11 +37,7 @@ def _check_strength(password: str) -> str:
         password: the password you want to be assessed
 
     Returns:
-        strength: your password strength, can either be WEAK, FAIR or STRONG. The minimum requirements for each strength are: 
-        - WEAK: contains digits only or contains less than 8 characters
-        - FAIR: contains between 8 and 12 characters, at most 50% of the password is digits
-        - STRONG: contains more than 12 characters, at most 40% of the password is digits, contains at least on special character
-        
+        strength: your password strength, can either be WEAK, FAIR or STRONG.
     """
 
     if password.isdigit() or len(password) < 8:
