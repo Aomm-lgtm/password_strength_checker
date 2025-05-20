@@ -5,6 +5,7 @@ import typer
 import rich 
 
 
+
 partition = "-"*100
 
 strength_style = {
@@ -18,15 +19,29 @@ app = typer.Typer()
 
 @app.command("save")
 def save():
-    login = typer.prompt("Please enter a login to be associated to your password")
+    save_name = typer.prompt("Please enter a save name to be associated to your password")
     password = typer.prompt("Please enter your password")
-    encpassword = _encrypt(password)
-    dict = {login, encpassword}
-    json.dumps(dict)
+    key = typer.prompt("Please enter your decryption key")
+    while True:
+        strength = _check_strength(password)
+        if strength != "STRONG":
+            if not typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
+                continue
+   
+        with open('passwords.json', 'r') as f:
+            data = json.load(f)
 
-    # strength = _check_strength(password)
-    # if strength != "STRONG":
-        # if not typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
+        data[save_name] = {
+            "save name": save_name,
+            "key": key,
+            "password": password 
+        }
+
+        with open('passwords.json', 'w') as f:
+            json.dump(data, f, indent=6)
+    
+        break
+
 
 
 @app.command("delete")
@@ -107,7 +122,7 @@ def _is_special_character(password: str) -> bool :
         password: the password you want to be assessed
 
     Returns:
-        bool: if there is at least one special character, True will be returned, if not then False will be returned
+        bool: True if there is at least one special character, False otherwise
     """
     special_characters = "!@#$%^&*()-+?_=,<>;:/"
     for character in password:
@@ -147,6 +162,7 @@ def _decrypt(encpassword, passkey):
     decpassword = passkey.decrypt(encpassword).decode()
 
     return decpassword
+
 
 
 if __name__ == "__main__":
