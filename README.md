@@ -1,3 +1,13 @@
+# Password Manager
+
+A password manager simulation.
+- check a password's strength
+- encrypt it 
+- store it 
+
+
+## Password Strength Checker
+
 This is a password strength checker. 
 This command line application is part of a password manager simulation project 
 
@@ -7,4 +17,8 @@ It rates the password's security level based on these criterias :
 - STRONG: contains more than 12 characters, at most 40% of the password is digits, contains at least on special character
 
 If the password is not at the most secure level, it can make suggestions 
-# password_strength_checker
+
+
+## Password Encryption 
+
+This programm uses the cryptography library and the Fernet class to encrypt and decrypt a password.
