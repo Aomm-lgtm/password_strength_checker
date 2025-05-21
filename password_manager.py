@@ -32,14 +32,15 @@ def save():
         if strength != "STRONG":
             if not typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
                 continue
-        
+
+        password = _encrypt(password, int(key))
         with open('passwords.json', 'r') as f:
             data = json.load(f)
 
         data[save_name] = {
             "save name": save_name,
             "key": key,
-            "password": _encrypt(password, key)
+            "password": password[0]
         }
 
         with open('passwords.json', 'w') as f:
@@ -135,7 +136,7 @@ def _is_special_character(password: str) -> bool :
             return True
     return False
 
-def _encrypt(password: str, key: int) -> tuple[str, int]:
+def _encrypt(password: str, key: int):
     """
     Basic, ceasar cipher like encrypt function
 
