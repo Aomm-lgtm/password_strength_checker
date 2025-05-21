@@ -24,40 +24,72 @@ class PasswordEncoder(JSONEncoder):
 
 @app.command("save")
 def save():
+
     save_name = typer.prompt("Please enter a save name to be associated to your password")
-    password = typer.prompt("Please enter your password")
     key = typer.prompt("Please enter your decryption key")
     while True:
+        password = typer.prompt("Please enter your password")
         strength = _check_strength(password)
-        if strength != "STRONG":
-            if not typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
-                continue
-
-        password = _encrypt(password, int(key))
-        with open('passwords.json', 'r') as f:
-            data = json.load(f)
-
-        data[save_name] = {
-            "save name": save_name,
-            "key": key,
-            "password": password[0]
-        }
-
-        with open('passwords.json', 'w') as f:
-            json.dump(data, f, indent=6)
+        if strength != "STRONG" and typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
     
-        break
+            password = _encrypt(password, int(key))
+            with open('passwords.json', 'r') as f:
+                data = json.load(f)
 
-@app.command("get password")
+                data[save_name] = {
+                "save name": save_name,
+                "key": key,
+                "password": password[0]
+                }
 
+            with open('passwords.json', 'w') as f:
+                json.dump(data, f, indent=6)
+    
+            break
+
+            
+
+@app.command("get_password")
+def get_password():
+    password_to_get = typer.prompt("What password do you want to see?")
+
+    with open('passwords.json', "r") as f:
+        data = json.load(f)
+        if password_to_get in data:
+            encpassword = data[password_to_get]["password"]
+            key = data[password_to_get]["key"]
+
+            password = _decrypt(encpassword, int(key))
+            typer.echo(f"The password is: {password}")
 
 @app.command("delete")
-def delete(login):
-    pass
+def delete():
+    password_to_delete = typer.prompt("What password do you want to delete?")
+
+    with open('passwords.json', "r") as f:
+        data = json.load(f)
+        if password_to_delete in data:
+            data.pop(password_to_delete)
+
+            with open('passwords.json', "w") as f:
+                json.dump(data, f, indent=6)
+    
+            typer.echo(f"Password: '{password_to_delete}' deleted")
+
+    typer.echo("No passwords are saved under this name")
+        
+
 
 @app.command("delete_all")
 def delete_all():
-    pass
+    if typer.confirm("Are you sure you wish to delete all your saved passwords?"):
+
+        with open('passwords.json',"w") as f:
+            json.dump({}, f)
+
+            typer.echo("All your passwords have been deleted")
+
+    typer.echo("Your passwords will not be deleted")
 
 def main(password: str = typer.Argument("1234", help="Password to assess" ),
          check_strength: str = typer.Option(),
