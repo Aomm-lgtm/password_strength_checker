@@ -48,6 +48,7 @@ def save():
     
         break
 
+@app.command("get password")
 
 
 @app.command("delete")
