@@ -25,15 +25,14 @@ A command line application password manager simulation.
 
 
 ## Currently known bugs
-[] if two passwords have the same save name, the first will me overwritten by the second<br />
+[x] if two passwords have the same save name, the first will me overwritten by the second<br />
 [x] when asked if the user wants to continue with a vulnerable password, saying no just asks the question again instead of asking for a different password<br />
-[] all typer.confirm seem to have some sort of problem(mostly that messages that should only be displayed when saying no still appear)<br />
 
 ## save command
 This command follows multiple steps :
 
 - The app asks the user for : the password name, the password itself and the password key
-- The password's strength is assessed, if it is deemed too vulnerable, the user will be made aware of it n(BUT GOING BACK TO CHANGE THE PASSWORD DOESN'T WORK FOR NOW)
+- The password's strength is assessed, if it is deemed too vulnerable, the user will be made aware of it
 - The password is encrypted using a ceasar cipher like function called _encryption, it uses an interger key to shift the characters ord
 - The name, key and encrypted password are stored in a json file
 

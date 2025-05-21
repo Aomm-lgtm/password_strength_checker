@@ -25,28 +25,36 @@ class PasswordEncoder(JSONEncoder):
 @app.command("save")
 def save():
 
-    save_name = typer.prompt("Please enter a save name to be associated to your password")
-    key = typer.prompt("Please enter your decryption key")
     while True:
-        password = typer.prompt("Please enter your password")
-        strength = _check_strength(password)
-        if strength != "STRONG" and typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
+        save_name = typer.prompt("Please enter a save name to be associated to your password")  
+        with open("passwords.json", 'r') as f:
+            data = json.load(f)
+            if save_name in data:
+                typer.echo("This name is already taken, plesae try a new one")
+                continue
+
+        key = typer.prompt("Please enter your decryption key")
+        while True:
+            password = typer.prompt("Please enter your password")
+            strength = _check_strength(password)
+            if strength != "STRONG" and typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
     
-            password = _encrypt(password, int(key))
-            with open('passwords.json', 'r') as f:
-                data = json.load(f)
+                password = _encrypt(password, int(key))
+                with open('passwords.json', 'r') as f:
+                    data = json.load(f)
 
-                data[save_name] = {
-                "save name": save_name,
-                "key": key,
-                "password": password[0]
-                }
+                    data[save_name] = {
+                    "save name": save_name,
+                    "key": key,
+                    "password": password[0]
+                    }   
 
-            with open('passwords.json', 'w') as f:
-                json.dump(data, f, indent=6)
+                with open('passwords.json', 'w') as f:
+                    json.dump(data, f, indent=6)
     
-            break
-
+                break
+        
+        break
             
 
 @app.command("get_password")
