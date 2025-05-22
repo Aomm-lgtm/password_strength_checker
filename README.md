@@ -19,9 +19,9 @@ A command line application password manager simulation.
 ## More features
 
 [x] can tell a password's strength and prevent a user from using a weak password<br />
-[] can generate passwords for the user<br />
+[x] can generate passwords for the user<br />
 [] storing the password elsewhere ?<br />
-[] more sophisticated encryption <br />
+[x] more sophisticated encryption <br />
 [x] ask for permission before deletion
 
 

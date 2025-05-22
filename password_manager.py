@@ -1,4 +1,6 @@
 import json
+import random
+import string
 
 import typer
 from rich.prompt import Confirm
@@ -28,34 +30,30 @@ def save():
                 continue
 
         while True:
-            try:
 
-                key = int(typer.prompt("Please enter your decryption key (int)"))
-            except ValueError:
-                typer.echo("This value is invalid, please enter an interger")
-                continue
-
-            while True:
-                password = typer.prompt("Please enter your password")
-                strength = _check_strength(password)
-                if strength != "STRONG" and Confirm.ask(f"""Your password is {strength_style[strength]}, to be {strength_style['STRONG']} it should contain at least 16 character (letters, numbers and special characters).\nAre you sure you wish to use it?"""):
+                key = _make_key()
+            
+                while True:
+                    password = typer.prompt("Please enter your password")
+                    strength = _check_strength(password)
+                    if strength != "STRONG" and Confirm.ask(f"""Your password is {strength_style[strength]}, to be {strength_style['STRONG']} it should contain at least 16 character (letters, numbers and special characters).\nAre you sure you wish to use it?"""):
                 
-                    password = _encrypt(password, key)
-                    with open('passwords.json', 'r') as f:
-                        data = json.load(f)
+                        password = _encrypt(password, key)
+                        with open('passwords.json', 'r') as f:
+                            data = json.load(f)
 
-                        data[save_name] = {
-                        "save name": save_name,
-                        "key": key,
-                        "password": password[0]
-                        }   
+                            data[save_name] = {
+                            "save name": save_name,
+                            "key": key,
+                            "password": password[0]
+                            }   
 
-                    with open('passwords.json', 'w') as f:
-                        json.dump(data, f, indent=6)
+                        with open('passwords.json', 'w') as f:
+                            json.dump(data, f, indent=6)
     
-                break
+                    break
         
-            break
+                break
         
         break
 
@@ -157,6 +155,24 @@ def _is_special_character(password: str) -> bool :
             return True
     return False
 
+def _make_key() -> int:
+    """
+    uses random and string modules to generate a random string (8 to 12 characters long) to be used in _encryption function as a key
+
+    Returns:
+        key: the key that will be used to encryot
+    """
+
+    length = random.randint(8, 12)
+    key = ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+    int_key = ""
+    for character in key:
+        int_key += str(ord(character))
+
+    int_key = int(int_key)%255
+    return int_key
+        
+
 def _encrypt(password: str, key: int) -> tuple[str, int]:
     """
     Basic, ceasar cipher like encrypt function
@@ -171,7 +187,7 @@ def _encrypt(password: str, key: int) -> tuple[str, int]:
     """
     encpassword = ""
     for character in password:
-        enccharacter = chr(ord(character) + key)
+        enccharacter = chr(ord(character)+key)
         encpassword = encpassword + enccharacter
     
     return encpassword, key

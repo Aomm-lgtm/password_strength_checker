@@ -1,3 +1,25 @@
+import random 
+import string
+
+
+def _make_key() -> int:
+    """
+    uses random and string modules to generate a random string (8 to 12 characters long) to be used in _encryption function as a key
+
+    Returns:
+        key: the key that will be used to encryot
+    """
+
+    length = random.randint(8, 12)
+    key = ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+    int_key = ""
+    for character in key:
+        int_key += str(ord(character))
+
+    int_key = int(int_key)%255
+    return int_key
+        
+
 def _encyrpt(password: str, key: int) -> tuple[str, int]:
     """
     Basic, ceasar cipher like encrypt function
@@ -35,6 +57,6 @@ def _decrypt(encpassword: str, key: int) -> str:
     
     return decpassword
 
-secret, key = _encyrpt("banana", 2)
+secret, key = _encyrpt("banana", _make_key())
 print(secret)
 print(_decrypt(secret, key))
