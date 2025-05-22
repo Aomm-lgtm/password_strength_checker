@@ -29,7 +29,7 @@ A command line application password manager simulation.
 [x] if two passwords have the same save name, the first will me overwritten by the second<br />
 [x] when asked if the user wants to continue with a vulnerable password, saying no just asks the question again instead of asking for a different password<br />
 
-## save command
+## save
 This command follows multiple steps :
 
 - The app asks the user for : the password name, the password itself and the password key
