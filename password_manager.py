@@ -18,7 +18,7 @@ app = typer.Typer()
 @app.command("save")
 def save():
     """
-    encrypts your password using a key you provided and then saves it in a json file
+    encrypts your password using a randomly generated key and then saves it in a json file
     """
 
     while True:
@@ -57,6 +57,7 @@ def save():
         
         break
 
+
 @app.command("get_password")
 def get_password():
     """
@@ -72,7 +73,6 @@ def get_password():
 
             password = _decrypt(encpassword, key)
             typer.echo(f"The password is: {password}")
-
 
 
 @app.command("delete")
@@ -100,7 +100,6 @@ def delete():
         typer.echo(f"Password: {password_to_delete} will not be deleted")
         break
         
-
 
 @app.command("delete_all")
 def delete_all():
@@ -155,6 +154,7 @@ def _is_special_character(password: str) -> bool :
             return True
     return False
 
+
 def _make_key() -> int:
     """
     uses random and string modules to generate a random string (8 to 12 characters long) to be used in _encryption function as a key
@@ -191,6 +191,7 @@ def _encrypt(password: str, key: int) -> tuple[str, int]:
         encpassword = encpassword + enccharacter
     
     return encpassword, key
+
 
 def _decrypt(encpassword: str, key: int) -> str:
     """

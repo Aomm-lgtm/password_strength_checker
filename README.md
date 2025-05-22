@@ -34,7 +34,7 @@ This command follows multiple steps :
 
 - The app asks the user for : the password name, the password itself and the password key
 - The password's strength is assessed, if it is deemed too vulnerable, the user will be made aware of it
-- The password is encrypted using a ceasar cipher like function called _encryption, it uses an interger key to shift the characters ord
+- The password is encrypted using a ceasar cipher like function called _encryption, it uses a randomly generated interger key to shift the characters ord
 - The name, key and encrypted password are stored in a json file
 
 ## get password
