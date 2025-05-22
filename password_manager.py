@@ -1,13 +1,9 @@
 import json
-from json import JSONEncoder
 
-from cryptography.fernet import Fernet 
 import typer
 import rich 
-
-
-
-partition = "-"*100
+from rich.prompt import Confirm
+from rich.console import Console
 
 strength_style = {
     "STRONG": "[bold green]STRONG[/bold green]",
@@ -18,15 +14,15 @@ strength_style = {
 app = typer.Typer()
 
 
-class PasswordEncoder(JSONEncoder):
-        def default(self, o):
-            return o.__dict__
 
 @app.command("save")
 def save():
+    """
+    encrypts your password using a key you provided and then saves it in a json file
+    """
 
     while True:
-        save_name = typer.prompt("Please enter a save name to be associated to your password")  
+        save_name = typer.prompt("Please enter a save_summary_ name to be associated to your password")  
         with open("passwords.json", 'r') as f:
             data = json.load(f)
             if save_name in data:
@@ -37,8 +33,8 @@ def save():
         while True:
             password = typer.prompt("Please enter your password")
             strength = _check_strength(password)
-            if strength != "STRONG" and typer.confirm("Your password is vulnerable. Are you sure you wish to use it?"):
-    
+            if strength != "STRONG" and Confirm.ask(f"""Your password is {strength_style[strength]}, to be {strength_style['STRONG']} it should contain at least 16 character (letters, numbers and special characters).\nAre you sure you wish to use it?"""):
+                
                 password = _encrypt(password, int(key))
                 with open('passwords.json', 'r') as f:
                     data = json.load(f)
@@ -59,6 +55,9 @@ def save():
 
 @app.command("get_password")
 def get_password():
+    """
+    asks for your password and decrypts it
+    """
     password_to_get = typer.prompt("What password do you want to see?")
 
     with open('passwords.json', "r") as f:
@@ -70,26 +69,40 @@ def get_password():
             password = _decrypt(encpassword, int(key))
             typer.echo(f"The password is: {password}")
 
+
+
 @app.command("delete")
 def delete():
+    """
+    deletes the desired password from the json file
+    """
     password_to_delete = typer.prompt("What password do you want to delete?")
+    while True:
+        if typer.confirm(f"Are you sure you wish to delete: {password_to_delete}?"):
 
-    with open('passwords.json', "r") as f:
-        data = json.load(f)
-        if password_to_delete in data:
-            data.pop(password_to_delete)
+            with open('passwords.json', "r") as f:
+                data = json.load(f)
+                if password_to_delete in data:
+                    data.pop(password_to_delete)
 
-            with open('passwords.json', "w") as f:
-                json.dump(data, f, indent=6)
+                    with open('passwords.json', "w") as f:
+                        json.dump(data, f, indent=6)
     
-            typer.echo(f"Password: '{password_to_delete}' deleted")
+                    typer.echo(f"Password: '{password_to_delete}' deleted")
 
-    typer.echo("No passwords are saved under this name")
+                else:
+                    typer.echo("No passwords are saved under this name")
+
+        typer.echo(f"Password: {password_to_delete} will not be deleted")
+        break
         
 
 
 @app.command("delete_all")
 def delete_all():
+    """
+    deletes all passwords in the json file
+    """
     if typer.confirm("Are you sure you wish to delete all your saved passwords?"):
 
         with open('passwords.json',"w") as f:
@@ -97,26 +110,8 @@ def delete_all():
 
             typer.echo("All your passwords have been deleted")
 
-    typer.echo("Your passwords will not be deleted")
-
-def main(password: str = typer.Argument("1234", help="Password to assess" ),
-         check_strength: str = typer.Option(),
-         save = typer.Option(),
-         get_password: str = typer.Option(),
-         ):
-    pass
-
-
-
-
-
-
-
-
-
-
-
-
+    else:
+        typer.echo("Your passwords will not be deleted")
 
 
 def _check_strength(password: str) -> str:
@@ -132,33 +127,12 @@ def _check_strength(password: str) -> str:
 
     if password.isdigit() or len(password) < 8:
         return "WEAK"
-    elif 8<= len(password) <= 12:
-        if _get_digit_percentage(password) > 0.5:
-            return "WEAK"
-        else:
+    elif 8<= len(password) <= 16:
             return "FAIR"
-    elif _get_digit_percentage(password) <= 0.4 and _is_special_character(password):
+    elif len(password) > 16 and _is_special_character(password):
         return "STRONG"
     else:
         return "FAIR"
-
-def _get_digit_percentage(password: str) -> float:
-    """
-    counts the number of digits in your password and returns 
-
-    Args:
-        password: the password you want to be assessed
-
-    Returns:
-        digit_percentage: the ratio of digits over the total number of characters in your password
-    """
-    digit = 0
-    for character in password:
-        if character.isdigit():
-            digit += 1
-  
-    digit_percentage = digit/len(password)
-    return digit_percentage
 
 
 def _is_special_character(password: str) -> bool :
@@ -177,7 +151,7 @@ def _is_special_character(password: str) -> bool :
             return True
     return False
 
-def _encrypt(password: str, key: int):
+def _encrypt(password: str, key: int) -> tuple[str, int]:
     """
     Basic, ceasar cipher like encrypt function
 

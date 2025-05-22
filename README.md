@@ -22,6 +22,7 @@ A command line application password manager simulation.
 [] can generate passwords for the user<br />
 [] storing the password elsewhere ?<br />
 [] more sophisticated encryption <br />
+[x] ask for permission before deletion
 
 
 ## Currently known bugs
